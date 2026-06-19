@@ -1,0 +1,57 @@
+# 默认忽略的文件
+/shelf/
+/workspace.xml
+# 基于编辑器的 HTTP 客户端请求
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+# 输出文件
+infantry/
+# keil debug配置文件
+DebugConfig/
+
+RTE/
+
+.cmsis/
+
+* MDK-ARM.code-workspace
+*.eide.usr.ctx.json
+*.clang-format
+
+*.rar
+*.o
+*.d
+*.crf
+*.htm
+*.dep
+*.map
+*.bak
+*.lnp
+*.lst
+*.ini
+*.iex
+*.sct
+*.scvd
+*.dbg*
+
+
+*.axf
+*.exf
+*.elf
+*.hex
+*.txt
+
+#keil 工程配置文件
+*.uvoptx
+*.uvguix.*
+*.mxproject
+
+
+
+
+
+
+
+
+
