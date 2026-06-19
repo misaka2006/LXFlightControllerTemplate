@@ -9,6 +9,9 @@
 // 所有结构体采用小端模式，与协议一致
 
 #include <cstdint>
+#include <string.h>
+
+#include "../../Driver/Inc/drv_uart.h"
 
 // ==================== 1. 飞控相关信息类 ====================
 
@@ -445,10 +448,264 @@ struct Struct_LXFC_Rx_Data_WaypointWrite {
 } __attribute__((packed));
 
 class LXFlightController {
-    public:
-    void Init();
-    private:
+public:
+    // 初始化所有成员变量为零
+    LXFlightController();
+    void Init() {
+        memset(&LXFC_Rx_Data_IMU, 0, sizeof(LXFC_Rx_Data_IMU));
+        memset(&LXFC_Rx_Data_MagBaroTemp, 0, sizeof(LXFC_Rx_Data_MagBaroTemp));
+        memset(&LXFC_Rx_Data_AttitudeEuler, 0, sizeof(LXFC_Rx_Data_AttitudeEuler));
+        memset(&LXFC_Rx_Data_AttitudeQuaternion, 0, sizeof(LXFC_Rx_Data_AttitudeQuaternion));
+        memset(&LXFC_Rx_Data_Height, 0, sizeof(LXFC_Rx_Data_Height));
+        memset(&LXFC_Rx_Data_FlightMode, 0, sizeof(LXFC_Rx_Data_FlightMode));
+        memset(&LXFC_Rx_Data_Speed, 0, sizeof(LXFC_Rx_Data_Speed));
+        memset(&LXFC_Rx_Data_PositionOffset, 0, sizeof(LXFC_Rx_Data_PositionOffset));
+        memset(&LXFC_Rx_Data_WindEstimate, 0, sizeof(LXFC_Rx_Data_WindEstimate));
+        memset(&LXFC_Rx_Data_TargetAttitude, 0, sizeof(LXFC_Rx_Data_TargetAttitude));
+        memset(&LXFC_Rx_Data_TargetSpeed, 0, sizeof(LXFC_Rx_Data_TargetSpeed));
+        memset(&LXFC_Rx_Data_ReturnHome, 0, sizeof(LXFC_Rx_Data_ReturnHome));
+        memset(&LXFC_Rx_Data_VoltageCurrent, 0, sizeof(LXFC_Rx_Data_VoltageCurrent));
+        memset(&LXFC_Rx_Data_ExternalModule, 0, sizeof(LXFC_Rx_Data_ExternalModule));
+        memset(&LXFC_Rx_Data_RGBBrightness, 0, sizeof(LXFC_Rx_Data_RGBBrightness));
+        memset(&LXFC_Rx_Data_LogString, 0, sizeof(LXFC_Rx_Data_LogString));
+        memset(&LXFC_Rx_Data_LogStringValue, 0, sizeof(LXFC_Rx_Data_LogStringValue));
+        memset(&LXFC_Rx_Data_PWMOutput, 0, sizeof(LXFC_Rx_Data_PWMOutput));
+        memset(&LXFC_Rx_Data_AttitudeControl, 0, sizeof(LXFC_Rx_Data_AttitudeControl));
+        memset(&LXFC_Rx_Data_GPSInfo, 0, sizeof(LXFC_Rx_Data_GPSInfo));
+        memset(&LXFC_Rx_Data_PositionSensor, 0, sizeof(LXFC_Rx_Data_PositionSensor));
+        memset(&LXFC_Rx_Data_SpeedSensor, 0, sizeof(LXFC_Rx_Data_SpeedSensor));
+        memset(&LXFC_Rx_Data_RangeSensor, 0, sizeof(LXFC_Rx_Data_RangeSensor));
+        memset(&LXFC_Rx_Data_RC, 0, sizeof(LXFC_Rx_Data_RC));
+        memset(&LXFC_Rx_Data_OpticalFlow_Mode0, 0, sizeof(LXFC_Rx_Data_OpticalFlow_Mode0));
+        memset(&LXFC_Rx_Data_OpticalFlow_Mode1, 0, sizeof(LXFC_Rx_Data_OpticalFlow_Mode1));
+        memset(&LXFC_Rx_Data_OpticalFlow_Mode2, 0, sizeof(LXFC_Rx_Data_OpticalFlow_Mode2));
+        memset(&LXFC_Rx_Data_WaypointRead, 0, sizeof(LXFC_Rx_Data_WaypointRead));
+        memset(&LXFC_Rx_Data_WaypointWrite, 0, sizeof(LXFC_Rx_Data_WaypointWrite));
+    }
 
+    // ==================== 0x01 IMU ====================
+    inline int16_t Get_IMU_Acc_X() const { return LXFC_Rx_Data_IMU.acc_x; }
+    inline int16_t Get_IMU_Acc_Y() const { return LXFC_Rx_Data_IMU.acc_y; }
+    inline int16_t Get_IMU_Acc_Z() const { return LXFC_Rx_Data_IMU.acc_z; }
+    inline int16_t Get_IMU_Gyro_X() const { return LXFC_Rx_Data_IMU.gyro_x; }
+    inline int16_t Get_IMU_Gyro_Y() const { return LXFC_Rx_Data_IMU.gyro_y; }
+    inline int16_t Get_IMU_Gyro_Z() const { return LXFC_Rx_Data_IMU.gyro_z; }
+    inline uint8_t Get_IMU_Shock_Status() const { return LXFC_Rx_Data_IMU.shock_status; }
+
+    // ==================== 0x02 罗盘、气压、温度 ====================
+    inline int16_t Get_Mag_X() const { return LXFC_Rx_Data_MagBaroTemp.mag_x; }
+    inline int16_t Get_Mag_Y() const { return LXFC_Rx_Data_MagBaroTemp.mag_y; }
+    inline int16_t Get_Mag_Z() const { return LXFC_Rx_Data_MagBaroTemp.mag_z; }
+    inline int32_t Get_Bar_Alt() const { return LXFC_Rx_Data_MagBaroTemp.alt_bar; }
+    inline int16_t Get_Temp() const { return LXFC_Rx_Data_MagBaroTemp.tmp; }         // 放大10倍
+    inline uint8_t Get_Bar_Status() const { return LXFC_Rx_Data_MagBaroTemp.bar_status; }
+    inline uint8_t Get_Mag_Status() const { return LXFC_Rx_Data_MagBaroTemp.mag_status; }
+
+    // ==================== 0x03 欧拉角 ====================
+    inline int16_t Get_Attitude_Roll() const { return LXFC_Rx_Data_AttitudeEuler.roll; }
+    inline int16_t Get_Attitude_Pitch() const { return LXFC_Rx_Data_AttitudeEuler.pitch; }
+    inline int16_t Get_Attitude_Yaw() const { return LXFC_Rx_Data_AttitudeEuler.yaw; }
+    inline uint8_t Get_Attitude_Fusion_Status() const { return LXFC_Rx_Data_AttitudeEuler.fusion_status; }
+
+    // ==================== 0x04 四元数 ====================
+    inline int16_t Get_Quaternion_V0() const { return LXFC_Rx_Data_AttitudeQuaternion.v0; }
+    inline int16_t Get_Quaternion_V1() const { return LXFC_Rx_Data_AttitudeQuaternion.v1; }
+    inline int16_t Get_Quaternion_V2() const { return LXFC_Rx_Data_AttitudeQuaternion.v2; }
+    inline int16_t Get_Quaternion_V3() const { return LXFC_Rx_Data_AttitudeQuaternion.v3; }
+    inline uint8_t Get_Quaternion_Fusion_Status() const { return LXFC_Rx_Data_AttitudeQuaternion.fusion_status; }
+
+    // ==================== 0x05 高度 ====================
+    inline int32_t Get_Alt_Fu() const { return LXFC_Rx_Data_Height.alt_fu; }
+    inline int32_t Get_Alt_Add() const { return LXFC_Rx_Data_Height.alt_add; }
+    inline uint8_t Get_Alt_Status() const { return LXFC_Rx_Data_Height.alt_status; }
+
+    // ==================== 0x06 飞行模式 ====================
+    inline uint8_t Get_Mode() const { return LXFC_Rx_Data_FlightMode.mode; }
+    inline uint8_t Get_Locked() const { return LXFC_Rx_Data_FlightMode.locked; }
+    inline uint8_t Get_CID() const { return LXFC_Rx_Data_FlightMode.cid; }
+    inline uint8_t Get_CMD0() const { return LXFC_Rx_Data_FlightMode.cmd0; }
+    inline uint8_t Get_CMD1() const { return LXFC_Rx_Data_FlightMode.cmd1; }
+
+    // ==================== 0x07 速度 ====================
+    inline int16_t Get_Speed_X() const { return LXFC_Rx_Data_Speed.speed_x; }
+    inline int16_t Get_Speed_Y() const { return LXFC_Rx_Data_Speed.speed_y; }
+    inline int16_t Get_Speed_Z() const { return LXFC_Rx_Data_Speed.speed_z; }
+
+    // ==================== 0x08 位置偏移 ====================
+    inline int32_t Get_Pos_Offset_X() const { return LXFC_Rx_Data_PositionOffset.pos_x; }
+    inline int32_t Get_Pos_Offset_Y() const { return LXFC_Rx_Data_PositionOffset.pos_y; }
+
+    // ==================== 0x09 风速估计 ====================
+    inline int16_t Get_Wind_X() const { return LXFC_Rx_Data_WindEstimate.wind_x; }
+    inline int16_t Get_Wind_Y() const { return LXFC_Rx_Data_WindEstimate.wind_y; }
+
+    // ==================== 0x0A 目标姿态 ====================
+    inline int16_t Get_Target_Roll() const { return LXFC_Rx_Data_TargetAttitude.tar_roll; }
+    inline int16_t Get_Target_Pitch() const { return LXFC_Rx_Data_TargetAttitude.tar_pitch; }
+    inline int16_t Get_Target_Yaw() const { return LXFC_Rx_Data_TargetAttitude.tar_yaw; }
+
+    // ==================== 0x0B 目标速度 ====================
+    inline int16_t Get_Target_Speed_X() const { return LXFC_Rx_Data_TargetSpeed.tar_speed_x; }
+    inline int16_t Get_Target_Speed_Y() const { return LXFC_Rx_Data_TargetSpeed.tar_speed_y; }
+    inline int16_t Get_Target_Speed_Z() const { return LXFC_Rx_Data_TargetSpeed.tar_speed_z; }
+
+    // ==================== 0x0C 回航信息 ====================
+    inline int16_t Get_Return_Angle() const { return LXFC_Rx_Data_ReturnHome.r_a; }     // *10 deg
+    inline uint16_t Get_Return_Distance() const { return LXFC_Rx_Data_ReturnHome.r_d; } // m
+
+    // ==================== 0x0D 电压电流 ====================
+    inline uint16_t Get_Voltage() const { return LXFC_Rx_Data_VoltageCurrent.voltage; } // *100
+    inline uint16_t Get_Current() const { return LXFC_Rx_Data_VoltageCurrent.current; } // *100
+
+    // ==================== 0x0E 外接模块状态 ====================
+    inline uint8_t Get_Ext_G_Vel_Status() const { return LXFC_Rx_Data_ExternalModule.sta_g_vel; }
+    inline uint8_t Get_Ext_G_Pos_Status() const { return LXFC_Rx_Data_ExternalModule.sta_g_pos; }
+    inline uint8_t Get_Ext_GPS_Status() const { return LXFC_Rx_Data_ExternalModule.sta_gps; }
+    inline uint8_t Get_Ext_Alt_Add_Status() const { return LXFC_Rx_Data_ExternalModule.sta_alt_add; }
+
+    // ==================== 0x0F RGB亮度 ====================
+    inline uint8_t Get_RGB_R() const { return LXFC_Rx_Data_RGBBrightness.bri_r; }
+    inline uint8_t Get_RGB_G() const { return LXFC_Rx_Data_RGBBrightness.bri_g; }
+    inline uint8_t Get_RGB_B() const { return LXFC_Rx_Data_RGBBrightness.bri_b; }
+    inline uint8_t Get_RGB_A() const { return LXFC_Rx_Data_RGBBrightness.bri_a; }
+
+    // ==================== 0xA0 LOG字符串 ====================
+    inline uint8_t Get_Log_Color() const { return LXFC_Rx_Data_LogString.color; }
+    inline const uint8_t* Get_Log_Str() const { return LXFC_Rx_Data_LogString.str; }
+    // 字符串有效长度 = data_length - 1，如需可单独获取 data_length，但未提供，可自行扩展
+
+    // ==================== 0xA1 LOG字符串+数值 ====================
+    inline int32_t Get_Log_Value() const { return LXFC_Rx_Data_LogStringValue.val; }
+    inline const uint8_t* Get_Log_Value_Str() const { return LXFC_Rx_Data_LogStringValue.str; }
+
+    // ==================== 0x20 PWM控制量 ====================
+    inline uint16_t Get_PWM_1() const { return LXFC_Rx_Data_PWMOutput.pwm1; }
+    inline uint16_t Get_PWM_2() const { return LXFC_Rx_Data_PWMOutput.pwm2; }
+    inline uint16_t Get_PWM_3() const { return LXFC_Rx_Data_PWMOutput.pwm3; }
+    inline uint16_t Get_PWM_4() const { return LXFC_Rx_Data_PWMOutput.pwm4; }
+    inline uint16_t Get_PWM_5() const { return LXFC_Rx_Data_PWMOutput.pwm5; }
+    inline uint16_t Get_PWM_6() const { return LXFC_Rx_Data_PWMOutput.pwm6; }
+    inline uint16_t Get_PWM_7() const { return LXFC_Rx_Data_PWMOutput.pwm7; }
+    inline uint16_t Get_PWM_8() const { return LXFC_Rx_Data_PWMOutput.pwm8; }
+
+    // ==================== 0x21 姿态控制量 ====================
+    inline int16_t Get_Ctrl_Roll() const { return LXFC_Rx_Data_AttitudeControl.ctrl_roll; }
+    inline int16_t Get_Ctrl_Pitch() const { return LXFC_Rx_Data_AttitudeControl.ctrl_pitch; }
+    inline int16_t Get_Ctrl_Thr() const { return LXFC_Rx_Data_AttitudeControl.ctrl_thr; }
+    inline int16_t Get_Ctrl_Yaw() const { return LXFC_Rx_Data_AttitudeControl.ctrl_yaw; }
+
+    // ==================== 0x30 GPS信息 ====================
+    inline uint8_t Get_GPS_Fix() const { return LXFC_Rx_Data_GPSInfo.fix_sta; }
+    inline uint8_t Get_GPS_SatNum() const { return LXFC_Rx_Data_GPSInfo.s_num; }
+    inline int32_t Get_GPS_Lng() const { return LXFC_Rx_Data_GPSInfo.lng; }
+    inline int32_t Get_GPS_Lat() const { return LXFC_Rx_Data_GPSInfo.lat; }
+    inline int32_t Get_GPS_Alt() const { return LXFC_Rx_Data_GPSInfo.alt_gps; }
+    inline int16_t Get_GPS_N_Speed() const { return LXFC_Rx_Data_GPSInfo.n_spec; }
+    inline int16_t Get_GPS_E_Speed() const { return LXFC_Rx_Data_GPSInfo.e_spec; }
+    inline int16_t Get_GPS_D_Speed() const { return LXFC_Rx_Data_GPSInfo.d_spec; }
+    inline uint8_t Get_GPS_PDOP() const { return LXFC_Rx_Data_GPSInfo.pdop; }   // 实际值/100
+    inline uint8_t Get_GPS_SACC() const { return LXFC_Rx_Data_GPSInfo.sacc; }   // mm/100
+    inline uint8_t Get_GPS_VACC() const { return LXFC_Rx_Data_GPSInfo.vacc; }   // mm/100
+
+    // ==================== 0x32 通用位置传感器 ====================
+    inline int32_t Get_PosSensor_X() const { return LXFC_Rx_Data_PositionSensor.pos_x; }
+    inline int32_t Get_PosSensor_Y() const { return LXFC_Rx_Data_PositionSensor.pos_y; }
+    inline int32_t Get_PosSensor_Z() const { return LXFC_Rx_Data_PositionSensor.pos_z; }
+
+    // ==================== 0x33 通用速度传感器 ====================
+    inline int16_t Get_SpeedSensor_X() const { return LXFC_Rx_Data_SpeedSensor.speed_x; }
+    inline int16_t Get_SpeedSensor_Y() const { return LXFC_Rx_Data_SpeedSensor.speed_y; }
+    inline int16_t Get_SpeedSensor_Z() const { return LXFC_Rx_Data_SpeedSensor.speed_z; }
+
+    // ==================== 0x34 通用测距传感器 ====================
+    inline uint8_t Get_Range_Direction() const { return LXFC_Rx_Data_RangeSensor.direction; }
+    inline uint16_t Get_Range_Angle() const { return LXFC_Rx_Data_RangeSensor.angle; }
+    inline uint32_t Get_Range_Dist() const { return LXFC_Rx_Data_RangeSensor.dist; }
+
+    // ==================== 0x40 遥控器数据 ====================
+    inline int16_t Get_RC_Ch1() const { return LXFC_Rx_Data_RC.ch1; }
+    inline int16_t Get_RC_Ch2() const { return LXFC_Rx_Data_RC.ch2; }
+    inline int16_t Get_RC_Ch3() const { return LXFC_Rx_Data_RC.ch3; }
+    inline int16_t Get_RC_Ch4() const { return LXFC_Rx_Data_RC.ch4; }
+    inline int16_t Get_RC_Ch5() const { return LXFC_Rx_Data_RC.ch5; }
+    inline int16_t Get_RC_Ch6() const { return LXFC_Rx_Data_RC.ch6; }
+    inline int16_t Get_RC_Ch7() const { return LXFC_Rx_Data_RC.ch7; }
+    inline int16_t Get_RC_Ch8() const { return LXFC_Rx_Data_RC.ch8; }
+    inline int16_t Get_RC_Ch9() const { return LXFC_Rx_Data_RC.ch9; }
+    inline int16_t Get_RC_Ch10() const { return LXFC_Rx_Data_RC.ch10; }
+
+    // ==================== 0x51 光流 Mode0 ====================
+    inline uint8_t Get_OpticalFlow_Mode0_Mode() const { return LXFC_Rx_Data_OpticalFlow_Mode0.mode; }
+    inline uint8_t Get_OpticalFlow_Mode0_State() const { return LXFC_Rx_Data_OpticalFlow_Mode0.state; }
+    inline int8_t Get_OpticalFlow_Mode0_DX() const { return LXFC_Rx_Data_OpticalFlow_Mode0.dx_0; }
+    inline int8_t Get_OpticalFlow_Mode0_DY() const { return LXFC_Rx_Data_OpticalFlow_Mode0.dy_0; }
+    inline uint8_t Get_OpticalFlow_Mode0_Quality() const { return LXFC_Rx_Data_OpticalFlow_Mode0.quality; }
+
+    // ==================== 0x51 光流 Mode1 ====================
+    inline uint8_t Get_OpticalFlow_Mode1_Mode() const { return LXFC_Rx_Data_OpticalFlow_Mode1.mode; }
+    inline uint8_t Get_OpticalFlow_Mode1_State() const { return LXFC_Rx_Data_OpticalFlow_Mode1.state; }
+    inline int16_t Get_OpticalFlow_Mode1_DX() const { return LXFC_Rx_Data_OpticalFlow_Mode1.dx_1; }
+    inline int16_t Get_OpticalFlow_Mode1_DY() const { return LXFC_Rx_Data_OpticalFlow_Mode1.dy_1; }
+    inline uint8_t Get_OpticalFlow_Mode1_Quality() const { return LXFC_Rx_Data_OpticalFlow_Mode1.quality; }
+
+    // ==================== 0x51 光流 Mode2 ====================
+    inline uint8_t Get_OpticalFlow_Mode2_Mode() const { return LXFC_Rx_Data_OpticalFlow_Mode2.mode; }
+    inline uint8_t Get_OpticalFlow_Mode2_State() const { return LXFC_Rx_Data_OpticalFlow_Mode2.state; }
+    inline int16_t Get_OpticalFlow_Mode2_DX() const { return LXFC_Rx_Data_OpticalFlow_Mode2.dx_2; }
+    inline int16_t Get_OpticalFlow_Mode2_DY() const { return LXFC_Rx_Data_OpticalFlow_Mode2.dy_2; }
+    inline int16_t Get_OpticalFlow_Mode2_DX_Fix() const { return LXFC_Rx_Data_OpticalFlow_Mode2.dx_fix; }
+    inline int16_t Get_OpticalFlow_Mode2_DY_Fix() const { return LXFC_Rx_Data_OpticalFlow_Mode2.dy_fix; }
+    inline int16_t Get_OpticalFlow_Mode2_IntegX() const { return LXFC_Rx_Data_OpticalFlow_Mode2.integ_x; }
+    inline int16_t Get_OpticalFlow_Mode2_IntegY() const { return LXFC_Rx_Data_OpticalFlow_Mode2.integ_y; }
+    inline uint8_t Get_OpticalFlow_Mode2_Quality() const { return LXFC_Rx_Data_OpticalFlow_Mode2.quality; }
+
+    // ==================== 0x60 航点读取 ====================
+    inline uint8_t Get_Waypoint_Read_Num() const { return LXFC_Rx_Data_WaypointRead.num; }
+
+    // ==================== 0x61 航点写入/读取返回 ====================
+    inline uint8_t Get_Waypoint_Num() const { return LXFC_Rx_Data_WaypointWrite.num; }
+    inline int32_t Get_Waypoint_Lng() const { return LXFC_Rx_Data_WaypointWrite.lng; }
+    inline int32_t Get_Waypoint_Lat() const { return LXFC_Rx_Data_WaypointWrite.lat; }
+    inline int32_t Get_Waypoint_Alt() const { return LXFC_Rx_Data_WaypointWrite.alt; }
+    inline uint16_t Get_Waypoint_Spd() const { return LXFC_Rx_Data_WaypointWrite.spd; }
+    inline uint16_t Get_Waypoint_Yaw() const { return LXFC_Rx_Data_WaypointWrite.yaw; }
+    inline uint8_t Get_Waypoint_Fun() const { return LXFC_Rx_Data_WaypointWrite.fun; }
+    inline uint8_t Get_Waypoint_Cmd1() const { return LXFC_Rx_Data_WaypointWrite.cmd1; }
+    inline uint8_t Get_Waypoint_Cmd2() const { return LXFC_Rx_Data_WaypointWrite.cmd2; }
+    inline uint8_t Get_Waypoint_Cmd3() const { return LXFC_Rx_Data_WaypointWrite.cmd3; }
+    inline uint8_t Get_Waypoint_Cmd4() const { return LXFC_Rx_Data_WaypointWrite.cmd4; }
+
+private:
+    // 所有结构体实例（命名规则：去掉 Struct_ 前缀）
+    struct Struct_LXFC_Rx_Data_IMU LXFC_Rx_Data_IMU;
+    struct Struct_LXFC_Rx_Data_MagBaroTemp LXFC_Rx_Data_MagBaroTemp;
+    struct Struct_LXFC_Rx_Data_AttitudeEuler LXFC_Rx_Data_AttitudeEuler;
+    struct Struct_LXFC_Rx_Data_AttitudeQuaternion LXFC_Rx_Data_AttitudeQuaternion;
+    struct Struct_LXFC_Rx_Data_Height LXFC_Rx_Data_Height;
+    struct Struct_LXFC_Rx_Data_FlightMode LXFC_Rx_Data_FlightMode;
+    struct Struct_LXFC_Rx_Data_Speed LXFC_Rx_Data_Speed;
+    struct Struct_LXFC_Rx_Data_PositionOffset LXFC_Rx_Data_PositionOffset;
+    struct Struct_LXFC_Rx_Data_WindEstimate LXFC_Rx_Data_WindEstimate;
+    struct Struct_LXFC_Rx_Data_TargetAttitude LXFC_Rx_Data_TargetAttitude;
+    struct Struct_LXFC_Rx_Data_TargetSpeed LXFC_Rx_Data_TargetSpeed;
+    struct Struct_LXFC_Rx_Data_ReturnHome LXFC_Rx_Data_ReturnHome;
+    struct Struct_LXFC_Rx_Data_VoltageCurrent LXFC_Rx_Data_VoltageCurrent;
+    struct Struct_LXFC_Rx_Data_ExternalModule LXFC_Rx_Data_ExternalModule;
+    struct Struct_LXFC_Rx_Data_RGBBrightness LXFC_Rx_Data_RGBBrightness;
+    struct Struct_LXFC_Rx_Data_LogString LXFC_Rx_Data_LogString;
+    struct Struct_LXFC_Rx_Data_LogStringValue LXFC_Rx_Data_LogStringValue;
+    struct Struct_LXFC_Rx_Data_PWMOutput LXFC_Rx_Data_PWMOutput;
+    struct Struct_LXFC_Rx_Data_AttitudeControl LXFC_Rx_Data_AttitudeControl;
+    struct Struct_LXFC_Rx_Data_GPSInfo LXFC_Rx_Data_GPSInfo;
+    struct Struct_LXFC_Rx_Data_PositionSensor LXFC_Rx_Data_PositionSensor;
+    struct Struct_LXFC_Rx_Data_SpeedSensor LXFC_Rx_Data_SpeedSensor;
+    struct Struct_LXFC_Rx_Data_RangeSensor LXFC_Rx_Data_RangeSensor;
+    struct Struct_LXFC_Rx_Data_RC LXFC_Rx_Data_RC;
+    struct Struct_LXFC_Rx_Data_OpticalFlow_Mode0 LXFC_Rx_Data_OpticalFlow_Mode0;
+    struct Struct_LXFC_Rx_Data_OpticalFlow_Mode1 LXFC_Rx_Data_OpticalFlow_Mode1;
+    struct Struct_LXFC_Rx_Data_OpticalFlow_Mode2 LXFC_Rx_Data_OpticalFlow_Mode2;
+    struct Struct_LXFC_Rx_Data_WaypointRead LXFC_Rx_Data_WaypointRead;
+    struct Struct_LXFC_Rx_Data_WaypointWrite LXFC_Rx_Data_WaypointWrite;
 };
 
 #endif //ANO_H743_DVC_LXFLIGHTCONTROLLER_H
