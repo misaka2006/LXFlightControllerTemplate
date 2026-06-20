@@ -2,7 +2,9 @@
   <dictionary name="project">
     <words>
       <w>baro</w>
+      <w>huart</w>
       <w>lxfc</w>
+      <w>minipc</w>
     </words>
   </dictionary>
 </component>

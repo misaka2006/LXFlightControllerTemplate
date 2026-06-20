@@ -9,8 +9,7 @@
 // 所有结构体采用小端模式，与协议一致
 
 #include <cstdint>
-#include <string.h>
-
+#include <cstring>
 #include "../../Driver/Inc/drv_uart.h"
 
 // ==================== 1. 飞控相关信息类 ====================
@@ -447,41 +446,11 @@ struct Struct_LXFC_Rx_Data_WaypointWrite {
     uint8_t add_sum;
 } __attribute__((packed));
 
-class LXFlightController {
+class Class_LXFlightController {
 public:
     // 初始化所有成员变量为零
-    LXFlightController();
-    void Init() {
-        memset(&LXFC_Rx_Data_IMU, 0, sizeof(LXFC_Rx_Data_IMU));
-        memset(&LXFC_Rx_Data_MagBaroTemp, 0, sizeof(LXFC_Rx_Data_MagBaroTemp));
-        memset(&LXFC_Rx_Data_AttitudeEuler, 0, sizeof(LXFC_Rx_Data_AttitudeEuler));
-        memset(&LXFC_Rx_Data_AttitudeQuaternion, 0, sizeof(LXFC_Rx_Data_AttitudeQuaternion));
-        memset(&LXFC_Rx_Data_Height, 0, sizeof(LXFC_Rx_Data_Height));
-        memset(&LXFC_Rx_Data_FlightMode, 0, sizeof(LXFC_Rx_Data_FlightMode));
-        memset(&LXFC_Rx_Data_Speed, 0, sizeof(LXFC_Rx_Data_Speed));
-        memset(&LXFC_Rx_Data_PositionOffset, 0, sizeof(LXFC_Rx_Data_PositionOffset));
-        memset(&LXFC_Rx_Data_WindEstimate, 0, sizeof(LXFC_Rx_Data_WindEstimate));
-        memset(&LXFC_Rx_Data_TargetAttitude, 0, sizeof(LXFC_Rx_Data_TargetAttitude));
-        memset(&LXFC_Rx_Data_TargetSpeed, 0, sizeof(LXFC_Rx_Data_TargetSpeed));
-        memset(&LXFC_Rx_Data_ReturnHome, 0, sizeof(LXFC_Rx_Data_ReturnHome));
-        memset(&LXFC_Rx_Data_VoltageCurrent, 0, sizeof(LXFC_Rx_Data_VoltageCurrent));
-        memset(&LXFC_Rx_Data_ExternalModule, 0, sizeof(LXFC_Rx_Data_ExternalModule));
-        memset(&LXFC_Rx_Data_RGBBrightness, 0, sizeof(LXFC_Rx_Data_RGBBrightness));
-        memset(&LXFC_Rx_Data_LogString, 0, sizeof(LXFC_Rx_Data_LogString));
-        memset(&LXFC_Rx_Data_LogStringValue, 0, sizeof(LXFC_Rx_Data_LogStringValue));
-        memset(&LXFC_Rx_Data_PWMOutput, 0, sizeof(LXFC_Rx_Data_PWMOutput));
-        memset(&LXFC_Rx_Data_AttitudeControl, 0, sizeof(LXFC_Rx_Data_AttitudeControl));
-        memset(&LXFC_Rx_Data_GPSInfo, 0, sizeof(LXFC_Rx_Data_GPSInfo));
-        memset(&LXFC_Rx_Data_PositionSensor, 0, sizeof(LXFC_Rx_Data_PositionSensor));
-        memset(&LXFC_Rx_Data_SpeedSensor, 0, sizeof(LXFC_Rx_Data_SpeedSensor));
-        memset(&LXFC_Rx_Data_RangeSensor, 0, sizeof(LXFC_Rx_Data_RangeSensor));
-        memset(&LXFC_Rx_Data_RC, 0, sizeof(LXFC_Rx_Data_RC));
-        memset(&LXFC_Rx_Data_OpticalFlow_Mode0, 0, sizeof(LXFC_Rx_Data_OpticalFlow_Mode0));
-        memset(&LXFC_Rx_Data_OpticalFlow_Mode1, 0, sizeof(LXFC_Rx_Data_OpticalFlow_Mode1));
-        memset(&LXFC_Rx_Data_OpticalFlow_Mode2, 0, sizeof(LXFC_Rx_Data_OpticalFlow_Mode2));
-        memset(&LXFC_Rx_Data_WaypointRead, 0, sizeof(LXFC_Rx_Data_WaypointRead));
-        memset(&LXFC_Rx_Data_WaypointWrite, 0, sizeof(LXFC_Rx_Data_WaypointWrite));
-    }
+    Class_LXFlightController();
+    void Init(const UART_HandleTypeDef *huart, uint8_t __Frame_Header);
 
     // ==================== 0x01 IMU ====================
     inline int16_t Get_IMU_Acc_X() const { return LXFC_Rx_Data_IMU.acc_x; }
@@ -675,8 +644,11 @@ public:
     inline uint8_t Get_Waypoint_Cmd3() const { return LXFC_Rx_Data_WaypointWrite.cmd3; }
     inline uint8_t Get_Waypoint_Cmd4() const { return LXFC_Rx_Data_WaypointWrite.cmd4; }
 
-private:
-    // 所有结构体实例（命名规则：去掉 Struct_ 前缀）
+protected:
+
+    Struct_UART_Manage_Object *UART_Manage_Object;
+    uint8_t Frame_Header;
+
     struct Struct_LXFC_Rx_Data_IMU LXFC_Rx_Data_IMU;
     struct Struct_LXFC_Rx_Data_MagBaroTemp LXFC_Rx_Data_MagBaroTemp;
     struct Struct_LXFC_Rx_Data_AttitudeEuler LXFC_Rx_Data_AttitudeEuler;

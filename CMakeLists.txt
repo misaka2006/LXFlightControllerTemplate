@@ -38,7 +38,9 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Driver/Src/drv_uart.cpp
         User/Driver/Inc/drv_uart.h
         User/Decive/Inc/dvc_LXFlightController.h
-        User/Decive/Src/dvc_LXFlightController.cpp)
+        User/Decive/Src/dvc_LXFlightController.cpp
+        User/Decive/Inc/dvc_MiniPC.h
+        User/Decive/Src/dvc_MiniPC.cpp)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)

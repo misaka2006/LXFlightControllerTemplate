@@ -1,12 +1,11 @@
-
 /**
  * @file drv_uart.h
- * @author cjw by yssickjgd
+ * @author lez by yssickjgd
  * @brief UART通信初始化与配置流程
  * @version 0.1
- * @date 2025-07-1 0.1 26赛季定稿
+ * @date 2024-07-1 0.1 24赛季定稿
  *
- * @copyright ZLLC 2026
+ * @copyright ZLLC 2024
  *
  */
 
@@ -20,8 +19,6 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 
 #include "stm32h7xx_hal.h"
-#include "usart.h"
-
 
 /* Exported macros -----------------------------------------------------------*/
 
@@ -55,12 +52,11 @@ struct Struct_UART_Manage_Object
 
 
 
-//extern UART_HandleTypeDef huart1;
-////extern UART_HandleTypeDef huart2;
-//extern UART_HandleTypeDef huart3;
-//extern UART_HandleTypeDef huart6;
-////extern UART_HandleTypeDef huart7;
-extern DMA_HandleTypeDef hdma_uart5_rx;
+extern UART_HandleTypeDef huart1;
+//extern UART_HandleTypeDef huart2;
+extern UART_HandleTypeDef huart3;
+extern UART_HandleTypeDef huart6;
+//extern UART_HandleTypeDef huart7;
 
 extern struct Struct_UART_Manage_Object UART1_Manage_Object;
 extern struct Struct_UART_Manage_Object UART2_Manage_Object;
@@ -70,10 +66,6 @@ extern struct Struct_UART_Manage_Object UART5_Manage_Object;
 extern struct Struct_UART_Manage_Object UART6_Manage_Object;
 extern struct Struct_UART_Manage_Object UART7_Manage_Object;
 extern struct Struct_UART_Manage_Object UART8_Manage_Object;
-extern struct Struct_UART_Manage_Object UART9_Manage_Object;
-extern struct Struct_UART_Manage_Object UART10_Manage_Object;
-
-extern float temp_power;
 
 /* Exported function declarations --------------------------------------------*/
 
@@ -82,9 +74,6 @@ void UART_Init(UART_HandleTypeDef *huart, UART_Call_Back Callback_Function, uint
 uint8_t UART_Send_Data(UART_HandleTypeDef *huart, uint8_t *Data, uint16_t Length);
 
 void TIM_UART_PeriodElapsedCallback();
-
-void UART_Cleanup(UART_HandleTypeDef *huart);
-
 
 #ifdef __cplusplus
 }
