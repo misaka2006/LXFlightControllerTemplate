@@ -644,6 +644,8 @@ public:
     inline uint8_t Get_Waypoint_Cmd3() const { return LXFC_Rx_Data_WaypointWrite.cmd3; }
     inline uint8_t Get_Waypoint_Cmd4() const { return LXFC_Rx_Data_WaypointWrite.cmd4; }
 
+    static void LXFC_UART_RxCpltCallback(uint8_t *Rx_Data,uint16_t Length);
+
 protected:
 
     Struct_UART_Manage_Object *UART_Manage_Object;

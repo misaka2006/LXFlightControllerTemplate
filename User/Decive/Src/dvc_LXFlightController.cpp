@@ -64,6 +64,9 @@ void Class_LXFlightController::Init(const UART_HandleTypeDef *huart,uint8_t __Fr
     {
         UART_Manage_Object = &UART6_Manage_Object;
     }
-
     Frame_Header = __Frame_Header;
+}
+
+void Class_LXFlightController::LXFC_UART_RxCpltCallback(uint8_t *Rx_Data,uint16_t Length) {
+
 }

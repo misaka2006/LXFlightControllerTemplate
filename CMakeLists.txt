@@ -40,7 +40,11 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Decive/Inc/dvc_LXFlightController.h
         User/Decive/Src/dvc_LXFlightController.cpp
         User/Decive/Inc/dvc_MiniPC.h
-        User/Decive/Src/dvc_MiniPC.cpp)
+        User/Decive/Src/dvc_MiniPC.cpp
+        User/Tasks/Inc/task_init.h
+        User/Tasks/Src/task_init.cpp
+        User/Interaction/Inc/ita_drone.h
+        User/Interaction/Src/ita_drone.cpp)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
