@@ -12,6 +12,14 @@
 #include <cstring>
 #include "../../Driver/Inc/drv_uart.h"
 
+
+struct Struct_LXFC_UART_Data {
+    uint8_t frame_head;
+    uint8_t data_addr;
+    uint8_t function_ID;
+    uint8_t data_length;
+    uint8_t Data[123]; //这里的Data为通信协议中的数据内容DATA+和校验CHECK SUM+附加校验ADD SUM
+}__attribute__((packed));
 // ==================== 1. 飞控相关信息类 ====================
 
 // ID: 0x01 惯性传感器数据
@@ -446,6 +454,48 @@ struct Struct_LXFC_Rx_Data_WaypointWrite {
     uint8_t add_sum;
 } __attribute__((packed));
 
+enum Enum_LXFlightControl_Status {
+    LXFlightControl_Status_DISABLE = 0,
+    LXFlightControl_Status_ENABLE = 1,
+};
+
+enum Enum_LXFC_Function_ID {
+    LXFC_Function_ID_IMU = 0x01,                 // 惯性传感器数据
+    LXFC_Function_ID_MagBaroTemp = 0x02,         // 罗盘、气压、温度传感器数据
+    LXFC_Function_ID_AttitudeEuler = 0x03,       // 飞控姿态：欧拉角格式
+    LXFC_Function_ID_AttitudeQuaternion = 0x04,  // 飞控姿态：四元数格式
+    LXFC_Function_ID_Height = 0x05,              // 高度数据
+    LXFC_Function_ID_FlightMode = 0x06,          // 飞控运行模式
+    LXFC_Function_ID_Speed = 0x07,               // 飞行速度数据
+    LXFC_Function_ID_PositionOffset = 0x08,      // 位置偏移数据
+    LXFC_Function_ID_WindEstimate = 0x09,        // 风速估计
+    LXFC_Function_ID_TargetAttitude = 0x0A,      // 目标姿态数据
+    LXFC_Function_ID_TargetSpeed = 0x0B,         // 目标速度数据
+    LXFC_Function_ID_ReturnHome = 0x0C,          // 回航信息
+    LXFC_Function_ID_VoltageCurrent = 0x0D,      // 电压电流数据
+    LXFC_Function_ID_ExternalModule = 0x0E,      // 外接模块工作状态
+    LXFC_Function_ID_RGBBrightness = 0x0F,       // RGB亮度信息输出
+
+    LXFC_Function_ID_PWMOutput = 0x20,           // PWM控制量
+    LXFC_Function_ID_AttitudeControl = 0x21,     // 姿态控制量
+
+    LXFC_Function_ID_GPSInfo = 0x30,             // GPS传感器信息1
+    // 0x31 为 RESERVE，无对应结构体
+    LXFC_Function_ID_PositionSensor = 0x32,      // 通用位置型传感器数据
+    LXFC_Function_ID_SpeedSensor = 0x33,         // 通用速度型传感器数据
+    LXFC_Function_ID_RangeSensor = 0x34,         // 通用测距传感器数据
+
+    LXFC_Function_ID_RC = 0x40,                  // 遥控器数据
+
+    LXFC_Function_ID_OpticalFlow = 0x51,         // 匿名光流数据（包含MODE0/1/2）
+
+    LXFC_Function_ID_WaypointRead = 0x60,        // 航点读取
+    LXFC_Function_ID_WaypointWrite = 0x61,       // 航点写入/航点读取返回
+
+    LXFC_Function_ID_LogString = 0xA0,           // LOG信息输出-字符串
+    LXFC_Function_ID_LogStringValue = 0xA1       // LOG信息输出-字符串+数字
+};
+
 class Class_LXFlightController {
 public:
     // 初始化所有成员变量为零
@@ -644,12 +694,15 @@ public:
     inline uint8_t Get_Waypoint_Cmd3() const { return LXFC_Rx_Data_WaypointWrite.cmd3; }
     inline uint8_t Get_Waypoint_Cmd4() const { return LXFC_Rx_Data_WaypointWrite.cmd4; }
 
-    static void LXFC_UART_RxCpltCallback(uint8_t *Rx_Data,uint16_t Length);
+    void LXFC_UART_RxCpltCallback(uint8_t *Rx_Data,uint16_t Length);
 
 protected:
 
     Struct_UART_Manage_Object *UART_Manage_Object;
     uint8_t Frame_Header;
+
+    uint32_t Flag = 0; //滑动窗口，用于判断飞控是否在线
+    uint32_t Pre_Flag = 0;
 
     struct Struct_LXFC_Rx_Data_IMU LXFC_Rx_Data_IMU;
     struct Struct_LXFC_Rx_Data_MagBaroTemp LXFC_Rx_Data_MagBaroTemp;
@@ -680,6 +733,9 @@ protected:
     struct Struct_LXFC_Rx_Data_OpticalFlow_Mode2 LXFC_Rx_Data_OpticalFlow_Mode2;
     struct Struct_LXFC_Rx_Data_WaypointRead LXFC_Rx_Data_WaypointRead;
     struct Struct_LXFC_Rx_Data_WaypointWrite LXFC_Rx_Data_WaypointWrite;
+
+    void Data_Process(uint16_t Length);
+
 };
 
 #endif //ANO_H743_DVC_LXFLIGHTCONTROLLER_H

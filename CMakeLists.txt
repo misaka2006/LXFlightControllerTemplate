@@ -44,7 +44,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Tasks/Inc/task_init.h
         User/Tasks/Src/task_init.cpp
         User/Interaction/Inc/ita_drone.h
-        User/Interaction/Src/ita_drone.cpp)
+        User/Interaction/Src/ita_drone.cpp
+        User/Config/config.h)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)

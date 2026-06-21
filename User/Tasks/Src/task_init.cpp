@@ -4,6 +4,7 @@
 
 #include "main.h"
 #include "usart.h"
+#include "../../Config/config.h"
 #include "../../Driver/Inc/drv_uart.h"
 #include "../../Interaction/Inc/ita_drone.h"
 
@@ -18,6 +19,6 @@ void LXFC_UART4_Callback(uint8_t *Buffer, uint16_t Length) {
 
 extern "C" void Init_Task() {
 
-    UART_Init(&huart4, LXFC_UART4_Callback,128);
+    UART_Init(&UART_LXFC, LXFC_UART4_Callback,128);
 
 }
