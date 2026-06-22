@@ -47,46 +47,18 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for Task_LX */
-osThreadId_t Task_LXHandle;
-const osThreadAttr_t Task_LX_attributes = {
-  .name = "Task_LX",
-  .stack_size = 1024 * 4,
+/* Definitions for MiniPC_UART_Tas */
+osThreadId_t MiniPC_UART_TasHandle;
+const osThreadAttr_t MiniPC_UART_Tas_attributes = {
+  .name = "MiniPC_UART_Tas",
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
-/* Definitions for Task_LXUART */
-osThreadId_t Task_LXUARTHandle;
-const osThreadAttr_t Task_LXUART_attributes = {
-  .name = "Task_LXUART",
-  .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-/* Definitions for Task_ESC_LED */
-osThreadId_t Task_ESC_LEDHandle;
-const osThreadAttr_t Task_ESC_LED_attributes = {
-  .name = "Task_ESC_LED",
-  .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-/* Definitions for Task_OLED */
-osThreadId_t Task_OLEDHandle;
-const osThreadAttr_t Task_OLED_attributes = {
-  .name = "Task_OLED",
+/* Definitions for LXFC_UART_Task */
+osThreadId_t LXFC_UART_TaskHandle;
+const osThreadAttr_t LXFC_UART_Task_attributes = {
+  .name = "LXFC_UART_Task",
   .stack_size = 1024 * 4,
-  .priority = (osPriority_t) osPriorityLow,
-};
-/* Definitions for Task_DT_UART */
-osThreadId_t Task_DT_UARTHandle;
-const osThreadAttr_t Task_DT_UART_attributes = {
-  .name = "Task_DT_UART",
-  .stack_size = 256 * 4,
-  .priority = (osPriority_t) osPriorityNormal,
-};
-/* Definitions for CPU_Task */
-osThreadId_t CPU_TaskHandle;
-const osThreadAttr_t CPU_Task_attributes = {
-  .name = "CPU_Task",
-  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
 /* Definitions for LX_UART_Binary_Semaphore */
@@ -115,12 +87,8 @@ const osSemaphoreAttr_t OLED_i2c_Binary_Semaphore_attributes = {
 
 /* USER CODE END FunctionPrototypes */
 
-void APPTask_LX(void *argument);
-void APPTask_LXUART(void *argument);
-void APPTask_ESC_LED(void *argument);
-void APPTask_OLED(void *argument);
-void APPTask_DT_UART(void *argument);
-void APPCPU_Task(void *argument);
+void Staru_MiniPC_UART_Task(void *argument);
+void Start_LXFC_UART_Task(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -181,23 +149,11 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of Task_LX */
-  Task_LXHandle = osThreadNew(APPTask_LX, NULL, &Task_LX_attributes);
+  /* creation of MiniPC_UART_Tas */
+  MiniPC_UART_TasHandle = osThreadNew(Staru_MiniPC_UART_Task, NULL, &MiniPC_UART_Tas_attributes);
 
-  /* creation of Task_LXUART */
-  Task_LXUARTHandle = osThreadNew(APPTask_LXUART, NULL, &Task_LXUART_attributes);
-
-  /* creation of Task_ESC_LED */
-  Task_ESC_LEDHandle = osThreadNew(APPTask_ESC_LED, NULL, &Task_ESC_LED_attributes);
-
-  /* creation of Task_OLED */
-  Task_OLEDHandle = osThreadNew(APPTask_OLED, NULL, &Task_OLED_attributes);
-
-  /* creation of Task_DT_UART */
-  Task_DT_UARTHandle = osThreadNew(APPTask_DT_UART, NULL, &Task_DT_UART_attributes);
-
-  /* creation of CPU_Task */
-  CPU_TaskHandle = osThreadNew(APPCPU_Task, NULL, &CPU_Task_attributes);
+  /* creation of LXFC_UART_Task */
+  LXFC_UART_TaskHandle = osThreadNew(Start_LXFC_UART_Task, NULL, &LXFC_UART_Task_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -209,112 +165,40 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_APPTask_LX */
+/* USER CODE BEGIN Header_Staru_MiniPC_UART_Task */
 /**
-  * @brief  Function implementing the Task_LX thread.
+  * @brief  Function implementing the MiniPC_UART_Tas thread.
   * @param  argument: Not used
   * @retval None
   */
-/* USER CODE END Header_APPTask_LX */
-__weak void APPTask_LX(void *argument)
+/* USER CODE END Header_Staru_MiniPC_UART_Task */
+__weak void Staru_MiniPC_UART_Task(void *argument)
 {
-  /* USER CODE BEGIN APPTask_LX */
+  /* USER CODE BEGIN Staru_MiniPC_UART_Task */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END APPTask_LX */
+  /* USER CODE END Staru_MiniPC_UART_Task */
 }
 
-/* USER CODE BEGIN Header_APPTask_LXUART */
+/* USER CODE BEGIN Header_Start_LXFC_UART_Task */
 /**
-* @brief Function implementing the Task_LXUART thread.
+* @brief Function implementing the LXFC_UART_Task thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_APPTask_LXUART */
-__weak void APPTask_LXUART(void *argument)
+/* USER CODE END Header_Start_LXFC_UART_Task */
+__weak void Start_LXFC_UART_Task(void *argument)
 {
-  /* USER CODE BEGIN APPTask_LXUART */
+  /* USER CODE BEGIN Start_LXFC_UART_Task */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END APPTask_LXUART */
-}
-
-/* USER CODE BEGIN Header_APPTask_ESC_LED */
-/**
-* @brief Function implementing the Task_ESC_LED thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_APPTask_ESC_LED */
-__weak void APPTask_ESC_LED(void *argument)
-{
-  /* USER CODE BEGIN APPTask_ESC_LED */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END APPTask_ESC_LED */
-}
-
-/* USER CODE BEGIN Header_APPTask_OLED */
-/**
-* @brief Function implementing the Task_OLED thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_APPTask_OLED */
-__weak void APPTask_OLED(void *argument)
-{
-  /* USER CODE BEGIN APPTask_OLED */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END APPTask_OLED */
-}
-
-/* USER CODE BEGIN Header_APPTask_DT_UART */
-/**
-* @brief Function implementing the Task_DT_UART thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_APPTask_DT_UART */
-__weak void APPTask_DT_UART(void *argument)
-{
-  /* USER CODE BEGIN APPTask_DT_UART */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END APPTask_DT_UART */
-}
-
-/* USER CODE BEGIN Header_APPCPU_Task */
-/**
-* @brief Function implementing the CPU_Task thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_APPCPU_Task */
-__weak void APPCPU_Task(void *argument)
-{
-  /* USER CODE BEGIN APPCPU_Task */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END APPCPU_Task */
+  /* USER CODE END Start_LXFC_UART_Task */
 }
 
 /* Private application code --------------------------------------------------*/

@@ -4,7 +4,7 @@
 
 #ifndef ANO_H743_ITA_DRONE_H
 #define ANO_H743_ITA_DRONE_H
-#include "../../Decive/Inc/dvc_LXFlightController.h"
+#include "../../Device/Inc/dvc_LXFlightController.h"
 
 class Class_Drone {
     public:

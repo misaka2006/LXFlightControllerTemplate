@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <cstring>
 #include "../../Driver/Inc/drv_uart.h"
+#include "arm_math.h"
 
 
 struct Struct_LXFC_UART_Data {
@@ -735,6 +736,7 @@ protected:
     struct Struct_LXFC_Rx_Data_WaypointWrite LXFC_Rx_Data_WaypointWrite;
 
     void Data_Process(uint16_t Length);
+    float f = arm_sin_f32(0.1);
 
 };
 

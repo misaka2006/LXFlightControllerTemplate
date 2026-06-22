@@ -37,10 +37,10 @@ enable_language(C ASM)
 add_executable(${CMAKE_PROJECT_NAME}
         User/Driver/Src/drv_uart.cpp
         User/Driver/Inc/drv_uart.h
-        User/Decive/Inc/dvc_LXFlightController.h
-        User/Decive/Src/dvc_LXFlightController.cpp
-        User/Decive/Inc/dvc_MiniPC.h
-        User/Decive/Src/dvc_MiniPC.cpp
+        User/Device/Inc/dvc_LXFlightController.h
+        User/Device/Src/dvc_LXFlightController.cpp
+        User/Device/Inc/dvc_MiniPC.h
+        User/Device/Src/dvc_MiniPC.cpp
         User/Tasks/Inc/task_init.h
         User/Tasks/Src/task_init.cpp
         User/Interaction/Inc/ita_drone.h
@@ -78,4 +78,12 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
 
     # Add user defined libraries
+    ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/DSP/Lib/GCC/libarm_cortexM7lfdp_math.a
 )
+
+    # Hardware floating point (STM32H743: Cortex-M7 with double-precision FPU)
+add_compile_definitions(ARM_MATH_CM7;ARM_MATH_MATRIX_CHECK;ARM_MATH_ROUNDING)
+add_compile_options(-mfloat-abi=hard -mfpu=fpv5-d16)
+add_link_options(-mfloat-abi=hard -mfpu=fpv5-d16)
+
+include_directories(Core/Inc Drivers/STM32H7xx_HAL_Driver/Inc Drivers/STM32H7xx_HAL_Driver/Inc/Legacy Drivers/CMSIS/Device/ST/STM32H7xx/Include Drivers/CMSIS/Include Drivers/CMSIS/DSP/Include)
