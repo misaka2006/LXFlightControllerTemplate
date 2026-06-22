@@ -736,7 +736,6 @@ protected:
     struct Struct_LXFC_Rx_Data_WaypointWrite LXFC_Rx_Data_WaypointWrite;
 
     void Data_Process(uint16_t Length);
-    float f = arm_sin_f32(0.1);
 
 };
 

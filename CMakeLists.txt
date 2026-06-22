@@ -15,6 +15,9 @@ set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# CMSIS headers use local types for extern declarations, which C++ strict mode rejects
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fpermissive>)
+
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
@@ -45,7 +48,11 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Tasks/Src/task_init.cpp
         User/Interaction/Inc/ita_drone.h
         User/Interaction/Src/ita_drone.cpp
-        User/Config/config.h)
+        User/Config/config.h
+        User/Driver/Inc/drv_math.h
+        User/Driver/Src/drv_math.cpp
+        User/Algorithm/Inc/alg_fsm.h
+        User/Algorithm/Src/alg_fsm.cpp)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
