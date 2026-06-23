@@ -56,7 +56,11 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Device/Inc/dvc_GroundStation.h
         User/Device/Src/dvc_GroundStation.cpp
         User/Device/Src/dvc_RemoteControl.cpp
-        User/Device/Inc/dvc_RemoteControl.h)
+        User/Device/Inc/dvc_RemoteControl.h
+        User/Algorithm/Inc/alg_filter.h
+        User/Algorithm/Src/alg_filter.cpp
+        User/Algorithm/Inc/alg_pid.h
+        User/Algorithm/Src/alg_pid.cpp)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
