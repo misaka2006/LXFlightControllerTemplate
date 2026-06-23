@@ -1,0 +1,8 @@
+//
+// Created by minec on 2026/6/24.
+//
+
+#ifndef ANO_H743_DVC_GROUNDSTATION_H
+#define ANO_H743_DVC_GROUNDSTATION_H
+
+#endif //ANO_H743_DVC_GROUNDSTATION_H

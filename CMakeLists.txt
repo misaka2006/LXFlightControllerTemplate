@@ -52,7 +52,11 @@ add_executable(${CMAKE_PROJECT_NAME}
         User/Driver/Inc/drv_math.h
         User/Driver/Src/drv_math.cpp
         User/Algorithm/Inc/alg_fsm.h
-        User/Algorithm/Src/alg_fsm.cpp)
+        User/Algorithm/Src/alg_fsm.cpp
+        User/Device/Inc/dvc_GroundStation.h
+        User/Device/Src/dvc_GroundStation.cpp
+        User/Device/Src/dvc_RemoteControl.cpp
+        User/Device/Inc/dvc_RemoteControl.h)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
